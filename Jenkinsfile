@@ -11,38 +11,15 @@ pipeline {
 				git 'https://github.com/dimuit86/node-js-react-npm-app.git'
 			}
 		}
-
-
-		stage('Code Quality Check via SonarQube') {
-			steps {
-				script {
-				def scannerHome = tool 'SonarqubeScanner';
-					withSonarQubeEnv("SonarqubeServer") {
-					sh "${scannerHome}/bin/sonar-scanner \
-						-Dsonar.projectKey=node-js-react-npm-app \
-						-Dsonar.sources=. \
-						-Dsonar.css.node=. \
-						-Dsonar.host.url=http://viqsonar.eastus.cloudapp.azure.com:9000/ \
-						-Dsonar.login=squ_3ef641a03e8177d7a0ef638f69fafc2414d15a59"
-					}
-
-				}
+		stage('SonarQube Analysis') {
+			def msbuildHome = tool 'Default MSBuild'
+			def scannerHome = tool 'SonarScannerMSBuild'
+			withSonarQubeEnv() {
+			bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" begin /k:\"aspnetapp\""
+			bat "\"${msbuildHome}\\MSBuild.exe\" /t:Rebuild"
+			bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
 			}
 		}
-
-		
-		// stage('SonarQube analysis') {
-		// 	steps {
-		// 		script {
-		// 		// requires SonarQube Scanner 2.8+
-		// 		scannerHome = tool 'SonarqubeScanner'
-		// 		}
-		// 		withSonarQubeEnv('SonarqubeServer') {
-		// 		sh "${scannerHome}/bin/sonar-scanner"
-		// 		}
-		// 	}
-		// }
-
 		stage('Building our image') {
 			steps {
 				script {
