@@ -8,18 +8,29 @@ pipeline {
 	stages {
 		stage('Cloning our Git') {
 			steps {
-				git 'https://github.com/dimuit86/node-js-react-npm-app.git'
+				git 'https://github.com/dimuit86/aspnetapp.git'
 			}
 		}
-		stage('SonarQube Analysis') {
-			def msbuildHome = tool 'Default MSBuild'
-			def scannerHome = tool 'SonarScannerMSBuild'
-			withSonarQubeEnv() {
-			bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" begin /k:\"aspnetapp\""
-			bat "\"${msbuildHome}\\MSBuild.exe\" /t:Rebuild"
-			bat "\"${scannerHome}\\SonarScanner.MSBuild.exe\" end"
+
+		stage('Code Quality Check via SonarQube') {
+			steps {
+				script {
+				def scannerHome = tool 'SonarScannerMSBuild';
+					withSonarQubeEnv("SonarqubeServer") {
+					sh "dotnet ${scannerHome}/SonarScanner.MSBuild.dll begin /k:\"aspnetapp\""
+					sh "dotnet build"
+					sh "dotnet ${scannerHome}/SonarScanner.MSBuild.dll \
+						-Dsonar.projectKey=aspnetapp \
+						-Dsonar.sources=. \
+						-Dsonar.css.node=. \
+						-Dsonar.host.url=http://viqsonar.eastus.cloudapp.azure.com:9000/ \
+						-Dsonar.login=squ_3ef641a03e8177d7a0ef638f69fafc2414d15a59"
+					}
+
+				}
 			}
 		}
+
 		stage('Building our image') {
 			steps {
 				script {
