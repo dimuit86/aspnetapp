@@ -12,24 +12,24 @@ pipeline {
 			}
 		}
 
-		stage('Code Quality Check via SonarQube') {
-			steps {
-				script {
-				def scannerHome = tool 'SonarScannerMSBuild';
-					withSonarQubeEnv("SonarqubeServer") {
-					sh "dotnet ${scannerHome}/SonarScanner.MSBuild.dll begin /k:\"aspnetapp\""
-					sh "dotnet build"
-					sh "dotnet ${scannerHome}/SonarScanner.MSBuild.dll \
-						-Dsonar.projectKey=aspnetapp \
-						-Dsonar.sources=. \
-						-Dsonar.css.node=. \
-						-Dsonar.host.url=http://viqsonar.eastus.cloudapp.azure.com:9000/ \
-						-Dsonar.login=squ_3ef641a03e8177d7a0ef638f69fafc2414d15a59"
-					}
+		// stage('Code Quality Check via SonarQube') {
+		// 	steps {
+		// 		script {
+		// 		def scannerHome = tool 'SonarScannerMSBuild';
+		// 			withSonarQubeEnv("SonarqubeServer") {
+		// 			sh "dotnet ${scannerHome}/SonarScanner.MSBuild.dll begin /k:\"aspnetapp\""
+		// 			sh "dotnet build"
+		// 			sh "dotnet ${scannerHome}/SonarScanner.MSBuild.dll \
+		// 				-Dsonar.projectKey=aspnetapp \
+		// 				-Dsonar.sources=. \
+		// 				-Dsonar.css.node=. \
+		// 				-Dsonar.host.url=http://viqsonar.eastus.cloudapp.azure.com:9000/ \
+		// 				-Dsonar.login=squ_3ef641a03e8177d7a0ef638f69fafc2414d15a59"
+		// 			}
 
-				}
-			}
-		}
+		// 		}
+		// 	}
+		// }
 
 		stage('Building our image') {
 			steps {
