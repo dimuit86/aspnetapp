@@ -9,6 +9,8 @@ pipeline {
 		stage('Cloning our Git') {
 			steps {
 				git 'https://github.com/dimuit86/aspnetapp.git'
+				git branch: 'main', credentialsId: 'Github_Auth', url: 'https://github.com/dimuit86/aspnetapp.git'
+				// git 'https://github.com/dimuit86/node-js-react-npm-app.git'
 			}
 		}
 
